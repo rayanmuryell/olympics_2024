@@ -26,16 +26,11 @@ const Tables: React.FC = () => {
     const fetchMedals = async () => {
       setLoading(true);
       try {
-        const response = await fetch("https://api.olympics.kevle.xyz/medals", {
-          mode: "no-cors",
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+        const response = await fetch("https://api.olympics.kevle.xyz/medals");
         const data = await response.json();
         setMedals(data.results);
       } catch (error) {
-        console.error("Erro ao buscar os dados das medalhas:");
+        console.error("Erro ao buscar os dados das medalhas!", error);
       } finally {
         setLoading(false);
       }
