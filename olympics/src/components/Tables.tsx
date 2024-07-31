@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Image, Input, Spin, Table } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
-import './Tables.css';
+import "./Tables.css";
 
 interface Medal {
   country: {
@@ -26,11 +26,16 @@ const Tables: React.FC = () => {
     const fetchMedals = async () => {
       setLoading(true);
       try {
-        const response = await fetch("https://api.olympics.kevle.xyz/medals");
+        const response = await fetch("https://api.olympics.kevle.xyz/medals", {
+          mode: "cors",
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         const data = await response.json();
         setMedals(data.results);
       } catch (error) {
-        console.error("Erro ao buscar os dados das medalhas!", error);
+        console.error("Erro ao buscar os dados das medalhas:");
       } finally {
         setLoading(false);
       }
