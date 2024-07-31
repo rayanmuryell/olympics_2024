@@ -1,0 +1,16 @@
+.table-container {
+    padding: 0 16px;
+  }
+  
+  .ant-table {
+    width: 100%;
+  }
+  
+  .ant-table-thead > tr > th {
+    white-space: nowrap;
+  }
+  
+  .ant-table-tbody > tr > td {
+    white-space: nowrap;
+  }
+  
