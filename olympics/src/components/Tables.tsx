@@ -26,7 +26,7 @@ const Tables: React.FC = () => {
     const fetchMedals = async () => {
       setLoading(true);
       try {
-        const response = await fetch("/medals");
+        const response = await fetch("https://api.olympics.kevle.xyz/medals");
         const data = await response.json();
         setMedals(data.results);
       } catch (error) {
