@@ -27,7 +27,7 @@ const Tables: React.FC = () => {
       setLoading(true);
       try {
         const response = await fetch("https://api.olympics.kevle.xyz/medals", {
-          mode: "cors",
+          mode: "no-cors",
         });
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
