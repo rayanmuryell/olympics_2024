@@ -26,7 +26,7 @@ const Tables: React.FC = () => {
     const fetchMedals = async () => {
       setLoading(true);
       try {
-        const response = await fetch("https://api.olympics.kevle.xyz/medals");
+        const response = await fetch("/medals");
         const data = await response.json();
         setMedals(data.results);
       } catch (error) {
@@ -35,9 +35,10 @@ const Tables: React.FC = () => {
         setLoading(false);
       }
     };
-
+  
     fetchMedals();
   }, []);
+  
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
