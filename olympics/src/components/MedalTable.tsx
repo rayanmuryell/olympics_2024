@@ -1,52 +1,44 @@
-import React, { useEffect, useState } from "react";
-import { Image, Input, Spin, Table } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
-import "./Tables.css";
+import React, { useState } from "react";
+import { Table, Image, Select, Button } from "antd";
+import { Medal } from "../api/fetchMedals";
+import { formatDate } from "../utils/formatDate";
 
-interface Medal {
-  country: {
-    name: string;
-    code: string;
-  };
-  medals: {
-    gold: number;
-    silver: number;
-    bronze: number;
-    total: number;
-  };
-  rank: number;
+const { Option } = Select;
+
+interface MedalTableProps {
+  medals: Medal[];
+  lastUpdated: string;
 }
 
-const Tables: React.FC = () => {
-  const [medals, setMedals] = useState<Medal[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState("");
+const MedalTable: React.FC<MedalTableProps> = ({ medals, lastUpdated }) => {
+  const [searchTerm] = useState("");
+  const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
 
-  useEffect(() => {
-    const fetchMedals = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch("https://api.olympics.kevle.xyz/medals");
-        const data = await response.json();
-        setMedals(data.results);
-      } catch (error) {
-        console.error("Erro ao buscar os dados das medalhas!", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchMedals();
-  }, []);
-  
-
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+  const handleCountryChange = (value: string[]) => {
+    setSelectedCountries(value);
   };
 
-  const filteredMedals = medals.filter((medal) =>
-    medal.country.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const clearSelection = () => {
+    setSelectedCountries([]);
+  };
+
+  const filteredMedals = medals.filter((medal) => {
+    const matchesSearchTerm = medal.country.name
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesSelectedCountry =
+      selectedCountries.length === 0 ||
+      selectedCountries.includes(medal.country.name);
+    return matchesSearchTerm && matchesSelectedCountry;
+  });
+
+  const countryOptions = Array.from(
+    new Set(medals.map((medal) => medal.country.name))
+  ).map((country) => (
+    <Option key={country} value={country}>
+      {country}
+    </Option>
+  ));
 
   const columns = [
     {
@@ -135,43 +127,34 @@ const Tables: React.FC = () => {
     },
   ];
 
+  const formattedLastUpdated = formatDate(lastUpdated);
+
   return (
     <>
-      <Input
-        placeholder="Search by country"
-        value={searchTerm}
-        onChange={handleSearch}
-        style={{ marginBottom: 16, width: "100%", maxWidth: 300 }}
-      />
-      {loading ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-          }}
+      <div style={{ display: "flex", alignItems: "center", marginBottom: 16 }}>
+        <Select
+          mode="multiple"
+          placeholder="Filter by countries"
+          value={selectedCountries}
+          onChange={handleCountryChange}
+          style={{ marginRight: 16, width: "100%", maxWidth: 300 }}
         >
-          <Spin
-            indicator={<LoadingOutlined style={{ fontSize: 150 }} spin />}
-          />
-        </div>
-      ) : (
-        <div className="table-container">
-          <Table
-            columns={columns}
-            dataSource={filteredMedals}
-            pagination={{ pageSize: 10 }}
-            rowKey={(record) => record.country.code}
-            bordered
-            scroll={{ x: true }}
-            title={() => "Total Medals by Country"}
-            footer={() => "Paris 2024 Olympic Medal Tally Unofficial API"}
-          />
-        </div>
-      )}
+          {countryOptions}
+        </Select>
+        <Button onClick={clearSelection}>Clear</Button>
+      </div>
+      <Table
+        columns={columns}
+        dataSource={filteredMedals}
+        pagination={{ pageSize: 10 }}
+        rowKey={(record) => record.country.code}
+        bordered
+        scroll={{ x: true }}
+        title={() => "Total Medals by Country"}
+        footer={() => `Last updated: ${formattedLastUpdated}`}
+      />
     </>
   );
 };
 
-export default Tables;
+export default MedalTable;
