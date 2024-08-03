@@ -7,6 +7,7 @@ import MedalTable from "./components/MedalTable";
 import ComparationTable from "./components/ComparationTable";
 import { useMedals } from "./hooks/useMedals";
 import AppHeader from "./components/Header";
+import { Analytics } from "@vercel/analytics/react";
 
 const { Content, Footer, Sider } = Layout;
 
@@ -44,6 +45,7 @@ const App: React.FC = () => {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
+      <Analytics />
       <Layout>
         {!isMobile && <AppHeader />}
         <Layout>
